@@ -47,5 +47,5 @@ while True:
     role = "B" if role == "A" else "A"
 
 
-    with open("generated_text"+test_time+".txt", "a",encoding="utf-8") as f:
+    with open(r"BotCommute\generated_text"+test_time+".txt", "a",encoding="utf-8") as f:
         f.write(role+": "+generated_text+"\n")
