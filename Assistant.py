@@ -6,10 +6,9 @@ import json
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer,StoppingCriteriaList,StoppingCriteria
 from transformers import TextStreamer
+
 device = "cuda" # the device to load the model onto
-
 name = "Qwen/Qwen2.5-3B-Instruct"
-
 messages = ([
         {"role": "system", "content": "You are a helpful assistant."},
     ])
@@ -21,12 +20,11 @@ model = AutoModelForCausalLM.from_pretrained(
     torch_dtype="auto",
     device_map="auto"
 )
+
 tokenizer = AutoTokenizer.from_pretrained(name)
 if tokenizer.pad_token_id is None:
     tokenizer.pad_token = tokenizer.eos_token  # Set pad token if missing
     tokenizer.pad_token_id = tokenizer.eos_token_id + 1  # Assign a unique ID for padding
-
-
 
 while True:
     # Instead of using model.chat(), we directly use model.generate()
