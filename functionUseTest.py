@@ -17,14 +17,6 @@ tools = functionDefineAndDiscription.TOOLS
 messages = functionDefineAndDiscription.MESSAGES[:]
 
 
-text = tokenizer.apply_chat_template(messages, tools=tools, add_generation_prompt=True, tokenize=False)
-inputs = tokenizer(text, return_tensors="pt").to(model.device)
-outputs = model.generate(**inputs, max_new_tokens=512)
-output_text = tokenizer.batch_decode(outputs)[0][len(text):]
-
-print(output_text)
-
-
 def try_parse_tool_calls(content: str):
     """Try parse the tool calls."""
     tool_calls = []
@@ -48,29 +40,43 @@ def try_parse_tool_calls(content: str):
         return {"role": "assistant", "content": c, "tool_calls": tool_calls}
     return {"role": "assistant", "content": re.sub(r"<\|im_end\|>$", "", content)}
 
-messages.append(try_parse_tool_calls(output_text))
+while (True):
+    userInput = input("input:")
+    if(userInput == "exit"):
+        break
 
-if tool_calls := messages[-1].get("tool_calls", None):
-    for tool_call in tool_calls:
-        if fn_call := tool_call.get("function"):
-            fn_name: str = fn_call["name"]
-            fn_args: dict = fn_call["arguments"]
+    messages.append({"role":"user","content":userInput})
+    text = tokenizer.apply_chat_template(messages, tools=tools, add_generation_prompt=True, tokenize=False)
+    inputs = tokenizer(text, return_tensors="pt").to(model.device)
+    outputs = model.generate(**inputs, max_new_tokens=512)
+    output_text = tokenizer.batch_decode(outputs)[0][len(text):]
 
-            fn_res: str = json.dumps(functionDefineAndDiscription.get_function_by_name(fn_name)(**fn_args))
+    print(output_text)
 
-            messages.append({
-                "role": "tool",
-                "name": fn_name,
-                "content": fn_res,
-            })
 
-print(messages)
+    messages.append(try_parse_tool_calls(output_text))
 
-text = tokenizer.apply_chat_template(messages, tools=tools, add_generation_prompt=True, tokenize=False)
-inputs = tokenizer(text, return_tensors="pt").to(model.device)
-outputs = model.generate(**inputs, max_new_tokens=512)
-output_text = tokenizer.batch_decode(outputs)[0][len(text):]
+    if tool_calls := messages[-1].get("tool_calls", None):
+        for tool_call in tool_calls:
+            if fn_call := tool_call.get("function"):
+                fn_name: str = fn_call["name"]
+                fn_args: dict = fn_call["arguments"]
 
-print(output_text)
+                fn_res: str = json.dumps(functionDefineAndDiscription.get_function_by_name(fn_name)(**fn_args))
 
-messages.append(try_parse_tool_calls(output_text))
+                messages.append({
+                    "role": "tool",
+                    "name": fn_name,
+                    "content": fn_res,
+                })
+
+    print(messages)
+
+    text = tokenizer.apply_chat_template(messages, tools=tools, add_generation_prompt=True, tokenize=False)
+    inputs = tokenizer(text, return_tensors="pt").to(model.device)
+    outputs = model.generate(**inputs, max_new_tokens=512)
+    output_text = tokenizer.batch_decode(outputs)[0][len(text):]
+
+    print(output_text)
+
+    messages.append(try_parse_tool_calls(output_text))

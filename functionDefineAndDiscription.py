@@ -35,11 +35,31 @@ def get_temperature_date(location: str, date: str, unit: str = "celsius"):
     }
 
 
+i = 3
+def counter():
+    global i
+    i = i + 1
+    print("counter program:" + str(i))
+    return i
+
+def reset_counter():
+    global i
+    i = 0
+    print("counter reset:" + str(i))
+    return i
+
 def get_function_by_name(name):
     if name == "get_current_temperature":
         return get_current_temperature
     if name == "get_temperature_date":
         return get_temperature_date
+
+    if name == "counter":
+        return counter
+    if name == "reset_counter":
+        return reset_counter
+
+
 
 TOOLS = [
     {
@@ -90,8 +110,21 @@ TOOLS = [
             },
         },
     },
+    {
+        "type": "function",
+        "function": {
+            "name": "counter",
+            "description": "Add 1 to the counter and get current number",
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "reset_counter",
+            "description": "Reset the counter and get current number",
+        },
+    },
 ]
 MESSAGES = [
     {"role": "system", "content": "You are Qwen, created by Alibaba Cloud. You are a helpful assistant.\n\nCurrent Date: 2024-09-30"},
-    {"role": "user",  "content": "What's the temperature in San Francisco now? How about tomorrow?"},
 ]
