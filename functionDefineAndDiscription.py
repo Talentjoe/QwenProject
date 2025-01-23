@@ -48,6 +48,18 @@ def reset_counter():
     print("counter reset:" + str(i))
     return i
 
+def executeFunction(functionString: str,returnValueName :str):
+    try:
+        resultDict = {}
+        exec(functionString,resultDict)
+        return resultDict[returnValueName]
+
+    except Exception as e:
+        print(e)
+        return False
+
+
+
 def get_function_by_name(name):
     if name == "get_current_temperature":
         return get_current_temperature
@@ -59,6 +71,8 @@ def get_function_by_name(name):
     if name == "reset_counter":
         return reset_counter
 
+    if name == "executeFunction":
+        return executeFunction
 
 
 TOOLS = [
@@ -114,7 +128,8 @@ TOOLS = [
         "type": "function",
         "function": {
             "name": "counter",
-            "description": "Add 1 to the counter and get current number",
+            "description": "Add 1 to the counter and get current number, only one is added each time, if you want add "
+                           "more than one times, call multiple times",
         },
     },
     {
@@ -122,6 +137,31 @@ TOOLS = [
         "function": {
             "name": "reset_counter",
             "description": "Reset the counter and get current number",
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "executeFunction",
+            "description": "you can input a python program and the computer will execute the function and the result "
+                           "will be return to you in a dictionary. There should not be any return in the function, you "
+                           "are also able to know one of the value in the program, pass that as the second parameter."
+                           "use ; to separate each line, do not use '\n'",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "functionString": {
+                        "type": "string",
+                        "description": 'The function to execute, and should be executable. You should input the entire '
+                                       'function with no arguments. ',
+                    },
+                    "returnValueName": {
+                        "type": "string",
+                        "description": 'The value you want to know, will exact same name as in the executable program',
+                    },
+                },
+                "required": ["functionString"],
+            },
         },
     },
 ]
