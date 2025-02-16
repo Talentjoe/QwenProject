@@ -17,7 +17,6 @@ class genCall:
             device_map="auto"
         )
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
-
         self.tools = functionDefineAndDiscription.TOOLS
         self.messages = functionDefineAndDiscription.MESSAGES[:]
 
