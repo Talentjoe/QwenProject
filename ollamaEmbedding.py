@@ -35,3 +35,4 @@ for word1, word2 in test_pairs:
         npArry2 = np.array(emb2.embeddings).squeeze()
         similarity = cosine_similarity(npArry1, npArry2)
         print(f"Cosine Similarity ({word1}, {word2}): {similarity:.4f}")
+        print(f"欧几里得距离 ({word1}, {word2}): {np.linalg.norm(npArry2 - npArry1):.4f}")
